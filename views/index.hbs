@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login Example</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <section>
+        <div class="login">
+            <h3>login</h3>
+
+            <label for="username">username:</label>
+            <input type="text" name="username" id="username">
+
+            <label for="password">password:</label>
+            <input type="password" name="password" id="password">
+
+            <button id="btnLogin">submit</button>
+
+            <div class="info" id="info">
+                
+            </div>
+
+            <a href="/register">register</a>
+        </div>
+    </section>
+
+    <script>
+        const btnLogin = document.getElementById("btnLogin");
+        btnLogin.addEventListener("click", () => {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+
+            let info = document.getElementById("info");
+
+            let error = false;
+
+            if(!username || username.length === 0) {
+                error = true;
+                info.innerHTML = "username is empty";
+            }
+
+            if(!password || password.length === 0) {
+                error = true;
+                info.innerHTML = "password is empty";
+            }
+
+            if(!error) {
+                info.innerHTML = "";
+
+                loginUser(username, password)
+                .then((result) => {
+                    if(result.status === 0) {
+                        // User login
+                        info.innerHTML = "user found";
+                    }
+                    else if(result.status === 1) {
+                        info.innerHTML = "user not in database";
+                    }
+                })
+                .catch(err => console.log(err));
+            }
+        });
+
+        const loginUser = async (username, password) => {
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({username, password})
+            });
+            return await response.json();
+        }
+    </script>
+</body>
+</html>
